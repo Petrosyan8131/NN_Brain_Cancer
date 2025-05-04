@@ -12,6 +12,7 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
 from imblearn.over_sampling import RandomOverSampler, SMOTE
+# import shap
 
 # импорт и подготовка датасета
 df = pd.read_csv('data/scaled_train.csv')
@@ -38,34 +39,34 @@ data = X_train, X_test, Y_train, Y_test
 # используемые модели
 def KNN(data):
     data_train, data_test, res_train, res_test = data
-    model_neighbor = KNeighborsClassifier(n_neighbors=5)
+    model_neighbor = KNeighborsClassifier(n_neighbors=5, leaf_size=15, p=2)
     res_train = res_train.values.ravel()
     model_neighbor = model_neighbor.fit(data_train, res_train)
     return model_neighbor
 
 def SVM(data):
     data_train, data_test, res_train, res_test = data
-    clf = SVC(kernel='rbf')
+    clf = SVC(kernel='rbf', C=2.0, cache_size=200, degree=3, gamma=0.4, max_iter=300, tol=0.1)
     res_train = res_train.values.ravel()
     clf = clf.fit(data_train, res_train)
     return clf
 
 def DecisionTree(data):
     data_train, data_test, res_train, res_test = data
-    dt = DecisionTreeClassifier(random_state=0)
+    dt = DecisionTreeClassifier(random_state=0, max_depth=5, max_features=7, max_leaf_nodes=20, min_samples_leaf=1, min_samples_split=4)
     dt = dt.fit(data_train, res_train)
     return dt
 
 def LR(data):
     data_train, data_test, res_train, res_test = data
-    lr = LogisticRegression()
+    lr = LogisticRegression(C=5, intercept_scaling=1.0, max_iter=100)
     res_train = res_train.values.ravel()
     lr = lr.fit(data_train, res_train)
     return lr
 
 def RandomForest(data):
     data_train, data_test, res_train, res_test = data
-    rf = RandomForestClassifier()
+    rf = RandomForestClassifier(max_features=5, n_estimators=100, min_samples_leaf=1, min_samples_split=2)
     res_train = res_train.values.ravel()
     rf = rf.fit(data_train, res_train)
     return rf
@@ -107,7 +108,7 @@ res = pd.DataFrame({
                'Logistic Regression', 'Random Forest'],
     "balanced_accuracy": b_acc,
     "f1_accuracy": f1_acc,
-    "fbeta_accuracy": fb_acc,
+    "f2_accuracy": fb_acc,
     "FN": fn,
 })
 
