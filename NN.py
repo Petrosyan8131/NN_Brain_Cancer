@@ -31,7 +31,7 @@ def smote(x, y):
     sm =  SMOTE(random_state=10, k_neighbors=5)
     return sm.fit_resample(x, y)
 
-X_res, Y_res = smote(X, Y)
+X_res, Y_res = randomoversample(X, Y)
 
 X_train, X_test, Y_train, Y_test = train_test_split(X_res, Y_res, test_size=0.2)
 data = X_train, X_test, Y_train, Y_test
@@ -135,12 +135,48 @@ print('-'*60)
 print(res)
 print('-'*60)
 
-expl_rf = shap.Explainer(RandomForest(data_tr))
-shap_values = expl_rf(X_test)
-print(shap_values)
+# значения Шепли
+def Forestshap(datatr):
+    plt.clf()
+    expl_rf = shap.Explainer(RandomForest(datatr))
+    shap_values = expl_rf(datatr[0])
+    shap_values.values = shap_values.values[:,:,0]
+    shap_values.base_values = shap_values.base_values[0,1]
+    # shap.plots.waterfall(shap_values[1])
+    # shap.summary_plot(shap_values)
+    # shap.plots.beeswarm(shap_values)
+    shap.plots.bar(shap_values[0], show=False)
+    plt.title("Shap value for Random Forest(random oversampling)")
+    plt.show()
+    
+
+def DecTreeshap(datatr):
+    plt.clf()
+    exp_rf = shap.Explainer(DecisionTree(datatr))
+    shap_values = exp_rf(datatr[0])
+    shap_values.values = shap_values.values[:,:,0]
+    shap_values.base_values = shap_values.base_values[0,1]
+    shap.plots.bar(shap_values, show=False)
+    plt.title("Shap value for Decision Tree(random oversampling)")
+    plt.show()
+    
+def LinRegrshap(datatr):
+    plt.clf()
+    exp_rf = shap.Explainer(LR(datatr), X_train)
+    shap_values = exp_rf(datatr[0])
+    # shap_values.values = shap_values.values[:,:,0]
+    # shap_values.base_values = shap_values.base_values[0,1]
+    shap.plots.bar(shap_values, show=False)
+    plt.title("Shap value for Logistic Regression(random oversampling)")
+    plt.show()
+
+Forestshap(data_tr)
+DecTreeshap(data_tr)
+LinRegrshap(data_tr)
 
 # plt.show()
 
+# проверка smote и randomoversampling
 # print(f"До SMOTE")
 # print(Y.value_counts())
 # print("-"*50)
