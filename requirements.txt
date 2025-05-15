@@ -5,3 +5,4 @@ pandas
 adjdatatools
 scikit-learn
 matplotlib
+imbalanced-learn
